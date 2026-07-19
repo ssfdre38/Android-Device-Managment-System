@@ -3,8 +3,22 @@ using Microsoft.Data.Sqlite;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure large request limits (up to 512 MB) for APK uploads
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 512 * 1024 * 1024; // 512 MB
+});
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.ValueLengthLimit = 512 * 1024 * 1024;
+    options.MultipartBodyLengthLimit = 512 * 1024 * 1024; // 512 MB
+    options.MultipartHeadersLengthLimit = 512 * 1024 * 1024;
+});
 
 // Enable CORS for development
 builder.Services.AddCors(options =>
@@ -309,7 +323,7 @@ app.MapPost("/api/devices/{deviceId}/upload-apk", async (string deviceId, IFormF
     await cmd.ExecuteNonQueryAsync();
     
     return Results.Ok(new { success = true, downloadUrl, commandId });
-});
+}).DisableAntiforgery();
 
 // Serves commands status list for dashboard
 app.MapGet("/api/devices/{deviceId}/commands", async (string deviceId) =>
