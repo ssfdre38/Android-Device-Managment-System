@@ -23,6 +23,7 @@ namespace DmaDesktop
         private static string deviceId = "";
         private static string deviceName = "";
         private static bool isRunning = true;
+        private static string updateStatus = "Checking...";
         private static readonly HttpClient httpClient = new HttpClient();
 
         // ── DTO Records ─────────────────────────────────────────────────────────────
@@ -62,6 +63,7 @@ namespace DmaDesktop
 
             // Run sync loops
             var registrationTask = Task.Run(SyncLoop);
+            var updateTask = Task.Run(UpdateStatusLoop);
 
             Console.WriteLine("Press Ctrl+C to stop the agent.");
             var exitEvent = new ManualResetEvent(false);
@@ -73,7 +75,7 @@ namespace DmaDesktop
 
             exitEvent.WaitOne();
             Console.WriteLine("Stopping Agent...");
-            await Task.WhenAny(registrationTask, Task.Delay(2000));
+            await Task.WhenAny(registrationTask, updateTask, Task.Delay(2000));
         }
 
         // ── Core Sync Loop ──────────────────────────────────────────────────────────
@@ -103,6 +105,20 @@ namespace DmaDesktop
                 catch
                 {
                     break;
+                }
+            }
+        }
+
+        private static async Task UpdateStatusLoop()
+        {
+            while (isRunning)
+            {
+                updateStatus = PlatformHelper.GetUpdateStatus();
+
+                // Wait 1 hour between checks (check isRunning every 10s to exit quickly)
+                for (int i = 0; i < 360 && isRunning; i++)
+                {
+                    try { await Task.Delay(10000); } catch { break; }
                 }
             }
         }
@@ -184,7 +200,7 @@ namespace DmaDesktop
                     PlatformHelper.GetUptime(),
                     GetScreenResolution(),
                     false,
-                    PlatformHelper.GetUpdateStatus()
+                    updateStatus
                 );
 
                 var dto = new ReportStatusDto(
