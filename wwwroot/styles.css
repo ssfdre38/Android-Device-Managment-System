@@ -1081,4 +1081,43 @@ tr:hover td {
     padding: 10px;
 }
 
+/* Client Downloads Section */
+.client-downloads {
+    margin-top: 32px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 24px;
+}
+
+.client-downloads h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-text-secondary);
+    margin-bottom: 16px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.client-downloads h3 i {
+    color: var(--color-primary);
+    margin-right: 6px;
+}
+
+.download-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.download-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 13px !important;
+    padding: 12px !important;
+    text-decoration: none;
+    border-radius: 10px;
+}
+
 
