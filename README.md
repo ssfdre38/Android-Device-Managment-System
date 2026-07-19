@@ -4,6 +4,16 @@ A lightweight, privacy-first, open-source Device Management System designed for 
 
 ---
 
+## 📂 Repository Branches
+
+This repository is organized into separate development branches for each component of the ecosystem:
+
+*   **[`server` (Default)](https://github.com/ssfdre38/Android-Device-Managment-System/tree/server)**: The host management console built with ASP.NET Core Minimal APIs on .NET 10, including the dynamic web dashboard console (`wwwroot/`).
+*   **[`client`](https://github.com/ssfdre38/Android-Device-Managment-System/tree/client)**: The Android Client Agent (DMA) background service built in Kotlin.
+*   **[`desktop-agent`](https://github.com/ssfdre38/Android-Device-Managment-System/tree/desktop-agent)**: The cross-platform desktop & server monitoring agent (DMA Desktop) built in C# for Windows, Linux, and macOS.
+
+---
+
 ## 🌟 Key Features
 
 * **Multi-Volume Storage Monitoring**: Track internal storage alongside external SD cards, USB OTG drives, and external SSD backups.
