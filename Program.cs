@@ -46,7 +46,8 @@ app.Use(async (context, next) =>
         path == "/api/login" || path.StartsWith("/api/devices/register") || 
         path.Contains("/status") || path.Contains("/commands/pending") || 
         path.Contains("/complete") || path == "/dma-client.apk" || 
-        path == "/dma-agent-win-x64.exe" || path.Contains("font"))
+        path == "/haven-client.apk" || path == "/dma-agent-win-x64.exe" || 
+        path.Contains("font"))
     {
         await next();
         return;
