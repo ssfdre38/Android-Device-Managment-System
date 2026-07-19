@@ -21,6 +21,7 @@ const storageVolumesContainer = document.getElementById("storage-volumes-contain
 const valIp = document.getElementById("val-ip");
 const valConnection = document.getElementById("val-connection");
 const valUptime = document.getElementById("val-uptime");
+const valUpdates = document.getElementById("val-updates");
 const commandLogBody = document.getElementById("command-log-body");
 const appsTableBody = document.getElementById("apps-table-body");
 const serverTime = document.getElementById("server-time");
@@ -234,6 +235,8 @@ function updateTelemetry(device) {
         } else {
             valUptime.textContent = "-";
         }
+
+        valUpdates.textContent = device.SystemInfo.UpdateStatus || "-";
         
         // Wake Lock Remote Button state update
         const btnWake = document.getElementById("btn-toggle-wake");

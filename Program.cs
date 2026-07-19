@@ -470,7 +470,7 @@ void InitializeDatabase()
 
 public record RegisterDeviceDto(string Id, string Name, string Model, string AndroidVersion);
 public record StorageVolume(string Name, long Used, long Total);
-public record SystemInfo(string IpAddress, string ConnectionType, int WifiSignal, long TotalRam, long AvailableRam, string CpuArch, long Uptime, string Resolution, bool KeepScreenAwake);
+public record SystemInfo(string IpAddress, string ConnectionType, int WifiSignal, long TotalRam, long AvailableRam, string CpuArch, long Uptime, string Resolution, bool KeepScreenAwake, string? UpdateStatus = null);
 public record ReportStatusDto(int Battery, long StorageUsed, long StorageTotal, List<string> AppList, List<StorageVolume>? StorageVolumes, SystemInfo? SystemInfo);
 public record QueueCommandDto(string CommandType, string Payload);
 public record CompleteCommandDto(bool Success, string? Result);
