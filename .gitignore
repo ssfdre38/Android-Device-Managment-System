@@ -17,4 +17,5 @@ wwwroot/uploads/*
 .vs/
 .idea/
 *.user
+appsettings.json
 appsettings.Development.json

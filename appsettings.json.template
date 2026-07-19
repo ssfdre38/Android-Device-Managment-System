@@ -7,8 +7,8 @@
   },
   "AllowedHosts": "*",
   "ServerConfig": {
-    "BindAddress": "100.95.198.162",
+    "BindAddress": "0.0.0.0",
     "Port": 18800,
-    "AdminPassword": "Fairfield866"
+    "AdminPassword": "change_me_to_secure_dashboard"
   }
 }
