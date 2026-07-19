@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Android Device Manager Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Device List -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-shield-halved logo-icon"></i>
+                <h2>D.M.S. Host</h2>
+            </div>
+            <div class="device-section">
+                <h3><i class="fa-solid fa-mobile-screen"></i> Managed Devices</h3>
+                <ul id="device-list" class="device-list-container">
+                    <li class="loading-item">Scanning for devices...</li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Dashboard View -->
+        <main class="main-content">
+            <!-- Header Status -->
+            <header class="main-header">
+                <div class="header-info">
+                    <h1 id="selected-device-name">No Device Selected</h1>
+                    <span id="online-badge" class="badge badge-offline">OFFLINE</span>
+                </div>
+                <div class="host-status">
+                    <span class="status-node"><i class="fa-solid fa-server"></i> MDM Server Online</span>
+                    <span class="status-node" id="server-time">00:00:00</span>
+                    <button class="btn btn-outline btn-sm btn-logout" onclick="handleLogout()" style="margin-left: 12px; padding: 6px 12px; font-size: 11px;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                </div>
+            </header>
+
+            <!-- Navigation Tabs (Only visible when device is selected) -->
+            <div class="tab-bar-container" id="dashboard-tabs" style="display: none;">
+                <button class="tab-btn active" onclick="switchTab('control')"><i class="fa-solid fa-sliders"></i> Control Console</button>
+                <button class="tab-btn" onclick="switchTab('admin')"><i class="fa-solid fa-user-shield"></i> Device Admin</button>
+                <button class="tab-btn" onclick="switchTab('packages')"><i class="fa-solid fa-cubes"></i> App Manager</button>
+            </div>
+
+            <!-- Dashboard Panels -->
+            <div class="tab-content-container">
+                
+                <!-- 1. Control Console Tab -->
+                <div class="tab-pane active" id="tab-control">
+                    <div class="dashboard-grid">
+                        <!-- Telemetry Panel -->
+                        <section class="card panel-telemetry">
+                            <h3><i class="fa-solid fa-gauge-high"></i> Telemetry Status</h3>
+                            <div class="stat-group">
+                                <div class="stat-item">
+                                    <span class="stat-label">Model Name / CPU</span>
+                                    <span class="stat-val" id="val-model">-</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Android Version / Specs</span>
+                                    <span class="stat-val" id="val-version">-</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Battery Level</span>
+                                    <div class="battery-bar-container">
+                                        <div class="battery-fill" id="val-battery-fill"></div>
+                                        <span class="battery-text" id="val-battery">-%</span>
+                                    </div>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Device Memory (RAM)</span>
+                                    <div class="storage-group">
+                                        <div class="storage-text">
+                                            <span id="val-ram-used">0 GB</span> / <span id="val-ram-total">0 GB</span>
+                                        </div>
+                                        <div class="progress-track">
+                                            <div class="progress-bar" id="val-ram-bar"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Device Storage</span>
+                                    <div id="storage-volumes-container">
+                                        <div class="storage-group">
+                                            <div class="storage-text">
+                                                <span id="val-storage-used">0 GB</span> / <span id="val-storage-total">0 GB</span>
+                                            </div>
+                                            <div class="progress-track">
+                                                <div class="progress-bar" id="val-storage-bar"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Local IP Address</span>
+                                    <span class="stat-val" id="val-ip">-</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Active Connection</span>
+                                    <span class="stat-val" id="val-connection">-</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Uptime</span>
+                                    <span class="stat-val" id="val-uptime">-</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Alerts / Remote Controls Panel -->
+                        <section class="card panel-actions">
+                            <h3><i class="fa-solid fa-sliders"></i> Remote Device Controller</h3>
+                            <div class="control-row">
+                                <label>Send Alert Notification</label>
+                                <div class="input-action-group">
+                                    <input type="text" id="input-notify-text" placeholder="Type notification message...">
+                                    <button class="btn btn-primary" onclick="sendCommand('SendNotification', 'input-notify-text')">
+                                        <i class="fa-solid fa-paper-plane"></i> Send
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="control-row">
+                                <label>Speak Text-to-Speech (TTS)</label>
+                                <div class="input-action-group">
+                                    <input type="text" id="input-tts-text" placeholder="Text to speak aloud...">
+                                    <button class="btn btn-neon" onclick="sendCommand('SpeakText', 'input-tts-text')">
+                                        <i class="fa-solid fa-volume-high"></i> Speak
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="control-row">
+                                <label>Adjust Screen Brightness</label>
+                                <div class="range-control-group">
+                                    <input type="range" id="slider-brightness" min="0" max="255" value="128" oninput="changeBrightness(this.value)">
+                                    <span id="label-brightness" class="slider-badge">128</span>
+                                </div>
+                            </div>
+                            <div class="control-row">
+                                <label>Adjust Media Audio Volume</label>
+                                <div class="range-control-group">
+                                    <input type="range" id="slider-volume" min="0" max="15" value="7" oninput="changeVolume(this.value)">
+                                    <span id="label-volume" class="slider-badge">7</span>
+                                </div>
+                            </div>
+                            <div class="control-row inline-controls">
+                                <button class="btn btn-outline" id="btn-toggle-wake" onclick="toggleWakeLockState()">
+                                    <i class="fa-solid fa-sun"></i> Keep Awake: OFF
+                                </button>
+                                <button class="btn btn-outline" onclick="sendDirectCommand('Vibrate', '1000')">
+                                    <i class="fa-solid fa-wave-square"></i> Vibrate
+                                </button>
+                                <button class="btn btn-outline" onclick="sendDirectCommand('Ping', '')">
+                                    <i class="fa-solid fa-network-wired"></i> Diagnostic Ping
+                                </button>
+                            </div>
+                        </section>
+
+                        <!-- Logs Log Panel -->
+                        <section class="card panel-logs">
+                             <div class="panel-header-row">
+                                 <h3><i class="fa-solid fa-list-check"></i> Recent Command Log</h3>
+                                 <button class="btn btn-outline btn-sm btn-clear-history" onclick="clearCommandHistory()"><i class="fa-solid fa-trash-can"></i> Clear History</button>
+                             </div>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Command</th>
+                                            <th>Payload</th>
+                                            <th>Status</th>
+                                            <th>Sent</th>
+                                            <th>Completed</th>
+                                            <th>Result Output</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="command-log-body">
+                                        <tr>
+                                            <td colspan="6" class="empty-row">Select a device to view command log</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <!-- 2. Device Admin Tab -->
+                <div class="tab-pane" id="tab-admin">
+                    <section class="card panel-admin-controls">
+                        <h3><i class="fa-solid fa-user-shield"></i> Security Policies & Device Control</h3>
+                        <p class="admin-instructions">
+                            These actions leverage Android's official DevicePolicyManager APIs. The target device must have the client app registered as a Device Administrator.
+                        </p>
+                        <div class="admin-buttons-grid">
+                            <div class="admin-action-card">
+                                <h4><i class="fa-solid fa-lock"></i> Lock Device</h4>
+                                <p>Immediately locks the device screen, requiring the user's PIN/Password/Pattern to unlock.</p>
+                                <button class="btn btn-primary" onclick="sendDirectCommand('LockDevice', '')">Lock Screen Now</button>
+                            </div>
+                            <div class="admin-action-card dest-card">
+                                <h4><i class="fa-solid fa-triangle-exclamation"></i> Factory Reset</h4>
+                                <p>Performs a secure data wipe, restoring the device to factory default settings. This is permanent.</p>
+                                <button class="btn btn-danger" onclick="confirmWipeDevice()">Wipe Device Data</button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- 3. App Manager Tab -->
+                <div class="tab-pane" id="tab-packages">
+                    <div class="dashboard-grid">
+                        <!-- App Deployment Card -->
+                        <section class="card panel-deploy">
+                            <h3><i class="fa-solid fa-cloud-arrow-up"></i> Deploy APK Package</h3>
+                            <div class="upload-zone" id="upload-zone">
+                                <i class="fa-solid fa-box-archive upload-icon"></i>
+                                <p>Drag and drop APK file or click to select</p>
+                                <input type="file" id="apk-file-input" accept=".apk" style="display: none;">
+                                <div class="upload-progress-container" id="upload-progress-container" style="display: none;">
+                                    <div class="upload-progress-track">
+                                        <div class="upload-progress-bar" id="upload-progress-bar"></div>
+                                    </div>
+                                    <span id="upload-status-text">Uploading: 0%</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Installed Packages Card -->
+                        <section class="card panel-app-manager">
+                             <h3><i class="fa-solid fa-cubes"></i> Installed Packages Manager</h3>
+                             <div class="search-filter-row">
+                                 <div class="search-filter-box">
+                                     <i class="fa-solid fa-magnifying-glass"></i>
+                                     <input type="text" id="app-search-input" placeholder="Search package name..." oninput="filterAppList()">
+                                 </div>
+                                 <div class="app-filter-tabs">
+                                     <button class="filter-tab-btn active" id="filter-btn-user" onclick="setAppFilterType('user')">User Apps</button>
+                                     <button class="filter-tab-btn" id="filter-btn-system" onclick="setAppFilterType('system')">System Apps</button>
+                                     <button class="filter-tab-btn" id="filter-btn-all" onclick="setAppFilterType('all')">All</button>
+                                 </div>
+                             </div>
+                            <div class="table-container apps-table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Package Name</th>
+                                            <th style="width: 220px; text-align: right;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="apps-table-body">
+                                        <tr>
+                                            <td colspan="2" class="empty-row">Select a device to list apps</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal to show large results -->
+    <div id="result-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h3 id="modal-title">Command Output</h3>
+            <pre id="modal-text"></pre>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

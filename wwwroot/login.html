@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D.M.S. Host Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <i class="fa-solid fa-shield-halved login-logo-icon"></i>
+                <h2>D.M.S. Host</h2>
+                <p>Private Device Management System Console</p>
+            </div>
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <label for="password"><i class="fa-solid fa-key"></i> Administrator Password</label>
+                    <input type="password" id="password" required placeholder="Enter password...">
+                </div>
+                <div id="error-message" class="error-text" style="display: none;"></div>
+                <button type="submit" class="btn btn-primary btn-login">
+                    <i class="fa-solid fa-right-to-bracket"></i> Authenticate
+                </button>
+            </form>
+        </div>
+    </div>
+    <script src="login.js"></script>
+</body>
+</html>

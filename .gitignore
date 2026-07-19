@@ -1,0 +1,20 @@
+# Build outputs
+bin/
+obj/
+
+# Databases
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Uploaded/Cached APK files
+wwwroot/uploads/
+wwwroot/uploads/*
+*.apk
+
+# User-specific settings
+.vs/
+.idea/
+*.user
+appsettings.Development.json
