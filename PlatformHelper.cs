@@ -144,11 +144,55 @@ namespace DmaDesktop
 
             return (0, 0);
         }
-
         public static long GetUptime()
         {
-            // Environment.TickCount64 works on Windows, Linux, and macOS in modern .NET
             return Environment.TickCount64 / 1000;
+        }
+
+        public static string GetUpdateStatus()
+        {
+            try
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    var ps = "-Command \"try { $s = New-Object -ComObject Microsoft.Update.Session; $searcher = $s.CreateUpdateSearcher(); $res = $searcher.Search('IsInstalled=0 and Type=''Software'''); echo $res.Updates.Count } catch { echo 0 }\"";
+                    var countStr = RunCommand("powershell", ps);
+                    if (int.TryParse(countStr, out int count))
+                    {
+                        return count == 0 ? "Up to date" : $"{count} updates pending";
+                    }
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    if (File.Exists("/var/lib/update-notifier/updates-available"))
+                    {
+                        var text = File.ReadAllText("/var/lib/update-notifier/updates-available").Trim();
+                        var lines = text.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+                        if (lines.Length > 0) return lines[0].Trim();
+                    }
+                    var aptCheck = RunCommand("/usr/lib/update-notifier/apt-check", "");
+                    if (!string.IsNullOrEmpty(aptCheck) && aptCheck.Contains(";"))
+                    {
+                        var parts = aptCheck.Split(';');
+                        if (parts.Length == 2 && int.TryParse(parts[0], out int total) && int.TryParse(parts[1], out int security))
+                        {
+                            return total == 0 ? "Up to date" : $"{total} updates pending ({security} security)";
+                        }
+                    }
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    var updates = RunCommand("softwareupdate", "-l");
+                    if (updates.Contains("No new software available")) return "Up to date";
+                    var count = updates.Split(new[] { '\n' }).Count(l => l.Contains("*"));
+                    return count > 0 ? $"{count} updates pending" : "Up to date";
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error reading update status: {ex.Message}");
+            }
+            return "Unknown";
         }
 
         // ── Helper Utilities ────────────────────────────────────────────────────────

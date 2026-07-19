@@ -37,7 +37,8 @@ namespace DmaDesktop
             string CpuArch, 
             long Uptime, 
             string Resolution, 
-            bool KeepScreenAwake
+            bool KeepScreenAwake,
+            string UpdateStatus
         );
         public record ReportStatusDto(
             int Battery, 
@@ -182,7 +183,8 @@ namespace DmaDesktop
                     PlatformHelper.GetCpuModel(),
                     PlatformHelper.GetUptime(),
                     GetScreenResolution(),
-                    false
+                    false,
+                    PlatformHelper.GetUpdateStatus()
                 );
 
                 var dto = new ReportStatusDto(
