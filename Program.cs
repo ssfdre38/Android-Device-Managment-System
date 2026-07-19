@@ -41,10 +41,11 @@ app.Use(async (context, next) =>
 {
     var path = context.Request.Path.Value?.ToLower() ?? "";
     
-    // Bypass auth for login page resources, registration, status reports, and fonts
+    // Bypass auth for login page resources, registration, status reports, command polling/completion, and fonts
     if (path == "/login.html" || path == "/login.js" || path == "/styles.css" || 
         path == "/api/login" || path.StartsWith("/api/devices/register") || 
-        path.Contains("/status") || path.Contains("font"))
+        path.Contains("/status") || path.Contains("/commands/pending") || 
+        path.Contains("/complete") || path.Contains("font"))
     {
         await next();
         return;
