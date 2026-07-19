@@ -1,0 +1,12 @@
+# Build outputs
+bin/
+obj/
+
+# Local configurations
+config.json
+config.json.template
+
+# User settings
+.vs/
+.idea/
+*.user
